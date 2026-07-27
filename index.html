@@ -5,10 +5,25 @@
     <title>ระบบคำนวณเงินผ่อนมือถือ - SG Finance+</title>
     <style>
         body { font-family: 'Sarabun', 'Tahoma', sans-serif; line-height: 1.6; padding: 30px; background-color: #f0f2f5; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
+        
+        /* ปุ่มสลับหน้า (Nav Button) มุมขวาบน */
+        .top-bar { display: flex; justify-content: flex-end; margin-bottom: 10px; }
+        .btn-nav { 
+            background-color: #ff9800; 
+            color: white; 
+            padding: 10px 18px; 
+            border-radius: 20px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 15px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            transition: background 0.3s; 
+        }
+        .btn-nav:hover { background-color: #e65100; }
+
         h1 { text-align: center; color: #1a73e8; margin-bottom: 25px; }
         
-        /* ปรับ Layout ช่องกรอกข้อมูลให้รองรับ 2 ช่องคู่กัน */
         .input-group { background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
         .input-wrapper { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
         .input-item { flex: 1; min-width: 250px; text-align: center; }
@@ -32,6 +47,11 @@
 <body>
 
 <div class="container">
+    <!-- ปุ่มไปหน้า Samsung วางอยู่มุมขวาบน -->
+    <div class="top-bar">
+        <a href="samsung.html" class="btn-nav">เช็คราคาผ่อน Samsung ➔</a>
+    </div>
+
     <h1> เช็คราคา-ผ่อน- SG </h1> 
     <h1>Oppo Vivo Redmi Honner Realme infinix </h1>
     
@@ -86,7 +106,6 @@
 <script>
 function runCalculator() {
     const price = parseFloat(document.getElementById('priceInput').value);
-    // รับค่าส่วนลด หากไม่มีการกรอกค่า หรือเป็น NaN ให้กำหนดเป็น 0
     const discountInput = parseFloat(document.getElementById('discountInput').value);
     const discount = isNaN(discountInput) ? 0 : discountInput;
 
@@ -95,22 +114,18 @@ function runCalculator() {
 
     if (!price || price <= 0) return;
 
-    // รายการ % เงินดาวน์ที่ต้องการแสดง
     const downRates = [0, 0.10, 0.20, 0.30, 0.40, 0.50];
 
     downRates.forEach(rate => {
-        // 1. คำนวณดาวน์เดิมแบบปัดเศษขึ้นหลักร้อย
         let initialDown = Math.ceil((price * rate) / 100) * 100;
         if (rate === 0) initialDown = 0;
 
-        // 2. นำส่วนลดมาลบออกจากเงินดาวน์ (ถ้าลบแล้วติดลบ ให้ใช้ 0)
         let finalDown = initialDown - discount+300;
         if (finalDown < 0) finalDown = 0;
 
-        // 3. หายอดจัด (ราคามือถือ - เงินดาวน์สุทธิ)
         const loan = price - finalDown;
 
-        // 4. คำนวณยอดผ่อนแต่ละช่วง (12ด. 1%, 18ด. 1%, 24ด. 1%)
+        // คำนวณดอกเบี้ย 1%
         const m12 = calculateMonthly(loan, 12, 0.01);
         const m18 = calculateMonthly(loan, 18, 0.01);
         const m24 = calculateMonthly(loan, 24, 0.01);
@@ -129,7 +144,6 @@ function runCalculator() {
 function calculateMonthly(loan, months, rate) {
     const interestTotal = loan * rate * months;
     const totalPayable = loan + interestTotal;
-    // ปัดเศษขึ้นเสมอ (Math.ceil) เพื่อให้ตรงกับมาตรฐานไฟแนนซ์
     return Math.ceil(totalPayable / months).toLocaleString();
 }
 </script>
