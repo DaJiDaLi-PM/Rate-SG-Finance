@@ -7,9 +7,14 @@
         body { font-family: 'Sarabun', 'Tahoma', sans-serif; line-height: 1.6; padding: 30px; background-color: #f0f2f5; color: #333; }
         .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h1 { text-align: center; color: #1a73e8; margin-bottom: 25px; }
-        .input-group { background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 25px; text-align: center; }
+        
+        /* ปรับ Layout ช่องกรอกข้อมูลให้รองรับ 2 ช่องคู่กัน */
+        .input-group { background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 25px; }
+        .input-wrapper { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        .input-item { flex: 1; min-width: 250px; text-align: center; }
+        
         label { font-weight: bold; font-size: 1.1em; display: block; margin-bottom: 10px; }
-        input { width: 80%; padding: 12px; border: 2px solid #1a73e8; border-radius: 6px; font-size: 20px; text-align: center; outline: none; }
+        input { width: 90%; padding: 12px; border: 2px solid #1a73e8; border-radius: 6px; font-size: 20px; text-align: center; outline: none; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 16px; }
         th, td { border: 1px solid #bdc3c7; padding: 12px; text-align: center; }
@@ -27,19 +32,27 @@
 <body>
 
 <div class="container">
-    <h1> เช็คราคา-ผ่อน- SG Oppo Vivo Redmi Honner Realme infinix </h1> 
+    <h1> เช็คราคา-ผ่อน- SG </h1> 
     <h1>Oppo Vivo Redmi Honner Realme infinix </h1>
     
     <div class="input-group">
-        <label>ระบุราคามือถือเครื่องเปล่า (บาท)</label>
-        <input type="number" id="priceInput" placeholder="ระบุราคา เช่น 11999" oninput="runCalculator()">
+        <div class="input-wrapper">
+            <div class="input-item">
+                <label for="priceInput">ระบุราคามือถือเครื่องเปล่า (บาท)</label>
+                <input type="number" id="priceInput" placeholder="ระบุราคา เช่น 11999" oninput="runCalculator()">
+            </div>
+            <div class="input-item">
+                <label for="discountInput">ส่วนลด (บาท)</label>
+                <input type="number" id="discountInput" placeholder="ระบุส่วนลด (ถ้ามี)" oninput="runCalculator()">
+            </div>
+        </div>
     </div>
 
     <table id="resultTable">
         <thead>
             <tr>
                 <th rowspan="2">ดาวน์ (%)</th>
-                <th rowspan="2">เงินดาวน์ (บาท)</th>
+                <th rowspan="2">เงินดาวน์สุทธิ (บาท)</th>
                 <th colspan="3">ยอดผ่อนต่อเดือน (แยกตามจำนวนงวด)</th>
             </tr>
             <tr>
@@ -58,20 +71,14 @@
         <div class="tutorial-box">
             <p><span class="step-title">สูตรหลัก:</span> ยอดผ่อน = [(ยอดจัด + ดอกเบี้ยรวม) ÷ จำนวนเดือน]</p>
             
-            <p><strong>ขั้นตอนการกดเครื่องคิดเลข (ตัวอย่าง: ราคา 11,999.- ดาวน์ 10% ผ่อน 12 เดือน)</strong></p>
+            <p><strong>ขั้นตอนการกดเครื่องคิดเลข (ตัวอย่าง: ราคา 11,999.- ดาวน์ 10% ส่วนลด 500.- ผ่อน 12 เดือน)</strong></p>
             <ol>
-                <li><strong>หาเงินดาวน์:</strong> <code>11,999 x 10%</code> = 1,199.9 <br>
-                <small>*ในทางปฏิบัติ บริษัทมักปัดเป็นเลขกลมๆ เช่น 1,200 (ปัดขึ้นหลักร้อย)</small></li>
-                
-                <li><strong>หายอดจัด (เงินกู้):</strong> <code>11,999 - 1,200</code> = <b>10,799</b></li>
-                
-                <li><strong>หาดอกเบี้ยรวม:</strong> <code>10,799 x 1% x 12 เดือน</code> = <b>1,295.88</b><br>
-                <small>*หมายเหตุ: 1% มาจากอัตราดอกเบี้ย Flat Rate ต่อเดือนที่วิเคราะห์จากรูปภาพ</small></li>
-                
-                <li><strong>หายอดผ่อนต่อเดือน:</strong> <code>(10,799 + 1,295.88) ÷ 12</code> = 1,007.90<br>
-                <span class="highlight">** ผลลัพธ์ในตารางจะปัดเศษขึ้นเสมอ เป็น 1,008.- **</span></li>
+                <li><strong>หายอดจัด (เงินกู้):</strong> <code>11,999 - 700</code> = <b>11,299</b></li>
+                <li><strong>หาดอกเบี้ยรวม:</strong> <code>11,299 x 1% x 12 เดือน</code> = <b>1,355.88</b></li>
+                <li><strong>หายอดผ่อนต่อเดือน:</strong> <code>(11,299 + 1,355.88) ÷ 12</code> = 1,054.57<br>
+                <span class="highlight">** ผลลัพธ์ในตารางจะปัดเศษขึ้นเสมอ **</span></li>
             </ol>
-            <p><i>*กรณีผ่อน 24 เดือน ให้เปลี่ยนจาก 1% เป็น 1% ในขั้นตอนที่ 3</i></p>
+            <p><i>*หมายเหตุ: หากไม่มีส่วนลด ให้ข้ามขั้นตอนที่ 2 ได้เลย</i></p>
         </div>
     </div>
 </div>
@@ -79,6 +86,10 @@
 <script>
 function runCalculator() {
     const price = parseFloat(document.getElementById('priceInput').value);
+    // รับค่าส่วนลด หากไม่มีการกรอกค่า หรือเป็น NaN ให้กำหนดเป็น 0
+    const discountInput = parseFloat(document.getElementById('discountInput').value);
+    const discount = isNaN(discountInput) ? 0 : discountInput;
+
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = "";
 
@@ -88,20 +99,25 @@ function runCalculator() {
     const downRates = [0, 0.10, 0.20, 0.30, 0.40, 0.50];
 
     downRates.forEach(rate => {
-        // 1. คำนวณดาวน์แบบปัดเศษขึ้นหลักร้อย (ตามพฤติกรรมในรูป 1778207978024.jpg)
-        let downAmount = Math.ceil((price * rate) / 100) * 100;
-        if (rate === 0) downAmount = 0;
+        // 1. คำนวณดาวน์เดิมแบบปัดเศษขึ้นหลักร้อย
+        let initialDown = Math.ceil((price * rate) / 100) * 100;
+        if (rate === 0) initialDown = 0;
 
-        const loan = price - downAmount;
+        // 2. นำส่วนลดมาลบออกจากเงินดาวน์ (ถ้าลบแล้วติดลบ ให้ใช้ 0)
+        let finalDown = initialDown - discount+300;
+        if (finalDown < 0) finalDown = 0;
 
-        // 2. คำนวณยอดผ่อนแต่ละช่วง (12ด. 1%, 18ด. 1%, 24ด. 1%)
+        // 3. หายอดจัด (ราคามือถือ - เงินดาวน์สุทธิ)
+        const loan = price - finalDown;
+
+        // 4. คำนวณยอดผ่อนแต่ละช่วง (12ด. 1%, 18ด. 1%, 24ด. 1%)
         const m12 = calculateMonthly(loan, 12, 0.01);
         const m18 = calculateMonthly(loan, 18, 0.01);
         const m24 = calculateMonthly(loan, 24, 0.01);
 
         const row = `<tr>
             <td class="down-row">${rate * 100}%</td>
-            <td>${downAmount.toLocaleString()}.-</td>
+            <td>${finalDown.toLocaleString()}.-</td>
             <td>${m12}.-</td>
             <td>${m18}.-</td>
             <td>${m24}.-</td>
