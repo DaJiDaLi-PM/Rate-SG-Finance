@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -58,7 +59,7 @@
         <div class="input-wrapper">
             <div class="input-item">
                 <label for="priceInput">ระบุราคามือถือเครื่องเปล่า (บาท)</label>
-                <input type="number" id="priceInput" placeholder="ระบุราคา เช่น 11999" oninput="runCalculator()">
+                <input type="number" id="priceInput" placeholder="ระบุราคา เช่น 13999" oninput="runCalculator()">
             </div>
             <div class="input-item">
                 <label for="discountInput">ส่วนลด (บาท)</label>
@@ -90,14 +91,13 @@
         <div class="tutorial-box">
             <p><span class="step-title">สูตรหลัก:</span> ยอดผ่อน = [(ยอดจัด + ดอกเบี้ยรวม) ÷ จำนวนเดือน]</p>
             
-            <p><strong>ขั้นตอนการกดเครื่องคิดเลข (ตัวอย่าง: ราคา 11,999.- ดาวน์ 5% ส่วนลด 500.- ผ่อน 12 เดือน)</strong></p>
+            <p><strong>ขั้นตอนการกดเครื่องคิดเลข (ตัวอย่าง: ราคา 13,999.- ดาวน์ 5% ผ่อน 24 เดือน)</strong></p>
             <ol>
-                <li><strong>หาเงินดาวน์ปกติ (5%):</strong> <code>11,999 x 5%</code> = 599.95 (ปัดขึ้นเป็น 600)</li>
-                <li><strong>หาเงินดาวน์หลังหักส่วนลด:</strong> <code>600 - 500</code> = <b>100.-</b></li>
-                <li><strong>หายอดจัด (เงินกู้):</strong> <code>11,999 - 100</code> = <b>11,899</b></li>
-                <li><strong>หาดอกเบี้ยรวม (0.87%):</strong> <code>11,899 x 0.87% x 12 เดือน</code> = <b>1,242.25</b></li>
-                <li><strong>หายอดผ่อนต่อเดือน:</strong> <code>(11,899 + 1,242.25) ÷ 12</code> = 1,095.10<br>
-                <span class="highlight">** ผลลัพธ์ในตารางจะปัดเศษขึ้นเสมอ **</span></li>
+                <li><strong>หาเงินดาวน์ปกติ (5%):</strong> <code>13,999 x 5%</code> = 699.95 (ปัดขึ้นเป็น 700.-)</li>
+                <li><strong>หายอดจัด (เงินกู้):</strong> <code>13,999 - 700</code> = <b>13,299.-</b></li>
+                <li><strong>หาดอกเบี้ยรวม (0.87% / 24 เดือน):</strong> <code>13,299 x 0.87% x 24 เดือน</code> = <b>2,776.82.-</b></li>
+                <li><strong>หายอดผ่อนต่อเดือน:</strong> <code>(13,299 + 2,776.82) ÷ 24</code> = 669.82<br>
+                <span class="highlight">** ผลลัพธ์ในตารางจะปัดเศษลงเสมอ (Math.floor) เหลือ 669.- **</span></li>
             </ol>
         </div>
     </div>
@@ -114,14 +114,14 @@ function runCalculator() {
 
     if (!price || price <= 0) return;
 
-    // กำหนดรายการ % เงินดาวน์: 0%, 5%, 10%, 20%, 30%
+    // รายการ % เงินดาวน์: 0%, 5%, 10%, 20%, 30%
     const downRates = [0, 0.05, 0.10, 0.20, 0.30];
 
     downRates.forEach(rate => {
         let initialDown = Math.ceil((price * rate) / 100) * 100;
         if (rate === 0) initialDown = 0;
 
-        let finalDown = initialDown - discount+250;
+        let finalDown = initialDown - discount;
         if (finalDown < 0) finalDown = 0;
 
         const loan = price - finalDown;
@@ -145,7 +145,10 @@ function runCalculator() {
 function calculateMonthly(loan, months, rate) {
     const interestTotal = loan * rate * months;
     const totalPayable = loan + interestTotal;
-    return Math.ceil(totalPayable / months).toLocaleString();
+    const monthlyPay = totalPayable / months;
+    
+    // ปัดเศษทิ้ง (Math.floor) เพื่อให้ได้ค่างวดตรงตามมาตรฐาน 669.-
+    return Math.floor(monthlyPay).toLocaleString();
 }
 </script>
 
