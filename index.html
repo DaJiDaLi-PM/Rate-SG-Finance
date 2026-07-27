@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบคำนวณเงินผ่อนมือถือ - SG Finance+</title>
+    <style>
+        body { font-family: 'Sarabun', 'Tahoma', sans-serif; line-height: 1.6; padding: 30px; background-color: #f0f2f5; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #1a73e8; margin-bottom: 25px; }
+        .input-group { background: #e8f0fe; padding: 20px; border-radius: 8px; margin-bottom: 25px; text-align: center; }
+        label { font-weight: bold; font-size: 1.1em; display: block; margin-bottom: 10px; }
+        input { width: 80%; padding: 12px; border: 2px solid #1a73e8; border-radius: 6px; font-size: 20px; text-align: center; outline: none; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 16px; }
+        th, td { border: 1px solid #bdc3c7; padding: 12px; text-align: center; }
+        th { background-color: #2c3e50; color: white; text-transform: uppercase; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        .down-row { font-weight: bold; color: #e67e22; }
+        .highlight { background-color: #fff9c4; font-weight: bold; }
+
+        .tutorial-section { margin-top: 40px; padding-top: 20px; border-top: 2px dashed #ccc; }
+        .tutorial-box { background: #fffde7; padding: 20px; border-left: 5px solid #fbc02d; border-radius: 4px; }
+        .step-title { font-weight: bold; color: #d35400; text-decoration: underline; }
+        code { background: #eee; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>ตารางผ่อนชำระค่างวด</h1>
+    
+    <div class="input-group">
+        <label>ระบุราคามือถือเครื่องเปล่า (บาท)</label>
+        <input type="number" id="priceInput" placeholder="ระบุราคา เช่น 11999" oninput="runCalculator()">
+    </div>
+
+    <table id="resultTable">
+        <thead>
+            <tr>
+                <th rowspan="2">ดาวน์ (%)</th>
+                <th rowspan="2">เงินดาวน์ (บาท)</th>
+                <th colspan="3">ยอดผ่อนต่อเดือน (แยกตามจำนวนงวด)</th>
+            </tr>
+            <tr>
+                <th>12 เดือน (ดอก 1%)</th>
+                <th>18 เดือน (ดอก 1%)</th>
+                <th>24 เดือน (ดอก 1%)</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+            <!-- ข้อมูลจะแสดงที่นี่ -->
+        </tbody>
+    </table>
+
+    <div class="tutorial-section">
+        <h3>คู่มือการคำนวณ (สำหรับสอนงาน)</h3>
+        <div class="tutorial-box">
+            <p><span class="step-title">สูตรหลัก:</span> ยอดผ่อน = [(ยอดจัด + ดอกเบี้ยรวม) ÷ จำนวนเดือน]</p>
+            
+            <p><strong>ขั้นตอนการกดเครื่องคิดเลข (ตัวอย่าง: ราคา 11,999.- ดาวน์ 10% ผ่อน 12 เดือน)</strong></p>
+            <ol>
+                <li><strong>หาเงินดาวน์:</strong> <code>11,999 x 10%</code> = 1,199.9 <br>
+                <small>*ในทางปฏิบัติ บริษัทมักปัดเป็นเลขกลมๆ เช่น 1,200 (ปัดขึ้นหลักร้อย)</small></li>
+                
+                <li><strong>หายอดจัด (เงินกู้):</strong> <code>11,999 - 1,200</code> = <b>10,799</b></li>
+                
+                <li><strong>หาดอกเบี้ยรวม:</strong> <code>10,799 x 1% x 12 เดือน</code> = <b>1,295.88</b><br>
+                <small>*หมายเหตุ: 1% มาจากอัตราดอกเบี้ย Flat Rate ต่อเดือนที่วิเคราะห์จากรูปภาพ</small></li>
+                
+                <li><strong>หายอดผ่อนต่อเดือน:</strong> <code>(10,799 + 1,295.88) ÷ 12</code> = 1,007.90<br>
+                <span class="highlight">** ผลลัพธ์ในตารางจะปัดเศษขึ้นเสมอ เป็น 1,008.- **</span></li>
+            </ol>
+            <p><i>*กรณีผ่อน 24 เดือน ให้เปลี่ยนจาก 1% เป็น 1% ในขั้นตอนที่ 3</i></p>
+        </div>
+    </div>
+</div>
+
+<script>
+function runCalculator() {
+    const price = parseFloat(document.getElementById('priceInput').value);
+    const tableBody = document.getElementById('tableBody');
+    tableBody.innerHTML = "";
+
+    if (!price || price <= 0) return;
+
+    // รายการ % เงินดาวน์ที่ต้องการแสดง
+    const downRates = [0, 0.10, 0.20, 0.30, 0.40, 0.50];
+
+    downRates.forEach(rate => {
+        // 1. คำนวณดาวน์แบบปัดเศษขึ้นหลักร้อย (ตามพฤติกรรมในรูป 1778207978024.jpg)
+        let downAmount = Math.ceil((price * rate) / 100) * 100;
+        if (rate === 0) downAmount = 0;
+
+        const loan = price - downAmount;
+
+        // 2. คำนวณยอดผ่อนแต่ละช่วง (12ด. 1%, 18ด. 1%, 24ด. 1%)
+        const m12 = calculateMonthly(loan, 12, 0.01);
+        const m18 = calculateMonthly(loan, 18, 0.01);
+        const m24 = calculateMonthly(loan, 24, 0.01);
+
+        const row = `<tr>
+            <td class="down-row">${rate * 100}%</td>
+            <td>${downAmount.toLocaleString()}.-</td>
+            <td>${m12}.-</td>
+            <td>${m18}.-</td>
+            <td>${m24}.-</td>
+        </tr>`;
+        tableBody.innerHTML += row;
+    });
+}
+
+function calculateMonthly(loan, months, rate) {
+    const interestTotal = loan * rate * months;
+    const totalPayable = loan + interestTotal;
+    // ปัดเศษขึ้นเสมอ (Math.ceil) เพื่อให้ตรงกับมาตรฐานไฟแนนซ์
+    return Math.ceil(totalPayable / months).toLocaleString();
+}
+</script>
+
+</body>
+</html>
