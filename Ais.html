@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ระบบบันทึกยอดขายรายวัน</title>
+    <style>
+        :root {
+            --ais: #94c11f; --dtac: #00a1e0; --true: #ed1c24; --mpay: #f7941d;
+            --bg-body: #f8fafc;
+        }
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: var(--bg-body);
+            margin: 0; padding: 20px;
+            display: flex; justify-content: center;
+        }
+        .container { width: 100%; max-width: 1050px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+	/*สร้างชื่อปุ่ม และสี */
+        .btn-group { display: flex; gap: 10px; }
+        button { padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; border: none; }
+        .btn-print { background: #1e293b; color: white; }
+        .btn-clear { background: #fee2e2; color: #ef4444; }
+        .btn-SG { background: #1e293b; color: white; }
+
+        .network-block {
+            background: white;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .row-main {
+            display: flex; align-items: center; gap: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #e2e8f0;
+            margin-bottom: 10px;
+        }
+        .label-name { width: 70px; font-weight: 800; font-size: 1.4rem; }
+
+        /* ปรับระยะห่างพนักงานให้ใกล้กันมากขึ้น */
+        .row-sub {
+            display: flex; 
+            align-items: center; 
+            gap: 15px; /* ลดระยะห่างระหว่างคนลง */
+            padding-left: 85px;
+        }
+        .staff-group { 
+            display: flex; 
+            align-items: center; 
+            color: #1e293b; 
+            font-size: 15px; 
+        }
+        .staff-group label { font-weight: bold; }
+        
+        .input-sub {
+            width: 75px; 
+            padding: 2px 0px; 
+            border: none; 
+            border-bottom: 1px solid #cbd5e1;
+            font-size: 16px; 
+            text-align: left; 
+            font-weight: bold;
+            background: transparent;
+            margin-left: 2px;
+        }
+        .input-sub:focus { outline: none; border-bottom: 2px solid #3b82f6; }
+
+        /* ปรับกล่องรวมยอดให้เด่นและไม่ตกขอบ */
+        .staff-total-box {
+            margin-left: auto; 
+            font-size: 16px; 
+            color: #1e293b;
+            background: #f1f5f9; 
+            padding: 6px 18px; 
+            border-radius: 20px;
+            font-weight: 800; /* เน้นตัวหนาพิเศษ */
+            white-space: nowrap; /* ป้องกันตัวเลขขึ้นบรรทัดใหม่ */
+            border: 1px solid #e2e8f0;
+        }
+        .staff-sum { font-size: 20px; color: #0f172a; }
+
+        .inputs-area { display: flex; gap: 12px; }
+        .field-group { display: flex; flex-direction: column; }
+        .field-group label { font-size: 11px; color: #94a3b8; font-weight: bold; margin-bottom: 3px; text-align: center;}
+        
+        input[type="text"]:not(.input-sub) {
+            width: 95px; padding: 8px; border: 2px solid #e2e8f0;
+            border-radius: 10px; text-align: right; font-size: 16px; font-weight: bold;
+        }
+
+        .results-area { display: flex; gap: 10px; margin-left: auto; }
+        .res-pill {
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            padding: 5px 15px; border-radius: 10px; min-width: 125px; text-align: right;
+        }
+        .res-title { display: block; font-size: 10px; color: #94a3b8; font-weight: bold; }
+        .res-val { font-weight: 800; font-size: 18px; color: #1e293b; }
+
+        @media print {
+            @page { size: A4; margin: 0.8cm; }
+            body { background: white; padding: 0; margin: 0; }
+            .header, .btn-group { display: none !important; }
+            .network-block { border: 1px solid #eee; box-shadow: none; margin-bottom: 12px; page-break-inside: avoid; }
+            .input-sub { border: none !important; width: 60px; }
+            .staff-total-box { background: #f8fafc !important; border: 1px solid #ddd !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>บันทึกยอดขายรายวัน</h2>
+        <div class="btn-group">
+            <button class="btn-print" onclick="window.print()">พิมพ์ (A4)</button>
+            <button class="btn-SG"onclick="window.location.href='index.html'">เช็ค ผ่อน SG</button>
+            <button class="btn-print" onclick="window.print()">ปุ่มว่าง</button>
+        </div>
+    </div>
+
+    <!-- AIS -->
+    <div class="network-block" data-type="ais">
+        <div class="row-main">
+            <div class="label-name" style="color: var(--ais);">AIS</div>
+            <div class="inputs-area">
+                <div class="field-group"><label>ยกมา</label><input type="text" class="input-a" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>กระเป๋าขาย</label><input type="text" class="input-b" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>เงินเข้า</label><input type="text" class="input-c" placeholder="+" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>ท้ายวัน</label><input type="text" class="input-d" onkeydown="handleKey(event)"></div>
+            </div>
+            <div class="results-area">
+                <div class="res-pill"><span class="res-title">ค่า L</span><span class="res-l res-val">-</span></div>
+                <div class="res-pill"><span class="res-title">สรุปยอด</span><span class="res-total res-val">-</span></div>
+            </div>
+        </div>
+        <div class="row-sub">
+            <div class="staff-group"><label>หนู=</label><input type="text" class="input-sub s-1" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-group"><label>หมาย=</label><input type="text" class="input-sub s-2" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-group"><label>นิว=</label><input type="text" class="input-sub s-3" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-total-box">รวม : <span class="staff-sum">0.00</span></div>
+        </div>
+    </div>
+
+    <!-- DTAC -->
+    <div class="network-block" data-type="dtac">
+        <div class="row-main">
+            <div class="label-name" style="color: var(--dtac);">DTAC</div>
+            <div class="inputs-area">
+                <div class="field-group"><label>ยกมา</label><input type="text" class="input-a" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>เงินเข้า</label><input type="text" class="input-c" placeholder="+" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>ท้ายวัน</label><input type="text" class="input-d" onkeydown="handleKey(event)"></div>
+            </div>
+            <div class="results-area">
+                <div class="res-pill"><span class="res-title">ค่า L</span><span class="res-l res-val">-</span></div>
+                <div class="res-pill"><span class="res-title">สรุปยอด</span><span class="res-total res-val">-</span></div>
+            </div>
+        </div>
+        <div class="row-sub">
+            <div class="staff-group"><label>หนู=</label><input type="text" class="input-sub s-1" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-group"><label>หมาย=</label><input type="text" class="input-sub s-2" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-group"><label>นิว=</label><input type="text" class="input-sub s-3" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-total-box">รวม : <span class="staff-sum">0.00</span></div>
+        </div>
+    </div>
+
+    <!-- TRUE -->
+    <div class="network-block" data-type="true">
+        <div class="row-main">
+            <div class="label-name" style="color: var(--true);">TRUE</div>
+            <div class="inputs-area">
+                <div class="field-group"><label>ยกมา</label><input type="text" class="input-a" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>เงินเข้า</label><input type="text" class="input-c" placeholder="+" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>ท้ายวัน</label><input type="text" class="input-d" onkeydown="handleKey(event)"></div>
+            </div>
+            <div class="results-area">
+                <div class="res-pill" style="min-width: 260px;"><span class="res-title">สรุปยอดรวม</span><span class="res-total res-val">-</span></div>
+            </div>
+        </div>
+        <div class="row-sub">
+            <div class="staff-group"><label>หนู=</label><input type="text" class="input-sub s-1" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-group"><label>หมาย=</label><input type="text" class="input-sub s-2" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-group"><label>นิว=</label><input type="text" class="input-sub s-3" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-total-box">รวม : <span class="staff-sum">0.00</span></div>
+        </div>
+    </div>
+
+    <!-- mPay -->
+    <div class="network-block" data-type="mpay">
+        <div class="row-main">
+            <div class="label-name" style="color: var(--mpay);">mPay</div>
+            <div class="inputs-area">
+                <div class="field-group"><label>ยกมา</label><input type="text" class="input-a" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>เงินเข้า</label><input type="text" class="input-c" placeholder="+" onkeydown="handleKey(event)"></div>
+                <div class="field-group"><label>ท้ายวัน</label><input type="text" class="input-d" onkeydown="handleKey(event)"></div>
+            </div>
+            <div class="results-area">
+                <div class="res-pill" style="min-width: 260px;"><span class="res-title">สรุปยอดรวม</span><span class="res-total res-val">-</span></div>
+            </div>
+        </div>
+        <div class="row-sub">
+            <div class="staff-group"><label>หนู=</label><input type="text" class="input-sub s-1" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-group"><label>หมาย=</label><input type="text" class="input-sub s-2" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-group"><label>นิว=</label><input type="text" class="input-sub s-3" placeholder="0" onkeydown="handleKey(event)"></div>
+            <div class="staff-total-box">รวม : <span class="staff-sum">0.00</span></div>
+        </div>
+    </div>
+        <div class="btn-group">
+            <button class="btn-clear" onclick="clearAll()">ล้างข้อมูล</button>
+        </div>
+</div>
+
+<script>
+    function handleKey(event) {
+        const input = event.target;
+        const allInputs = Array.from(document.querySelectorAll('input'));
+        const index = allInputs.indexOf(input);
+
+        if (event.key === "Enter") {
+            event.preventDefault();
+            processMath(input);
+            if (index < allInputs.length - 1) allInputs[index + 1].focus();
+        } else if (event.key === "ArrowRight") {
+            if (input.selectionStart === input.value.length && index < allInputs.length - 1) allInputs[index + 1].focus();
+        } else if (event.key === "ArrowLeft") {
+            if (input.selectionStart === 0 && index > 0) allInputs[index - 1].focus();
+        }
+        setTimeout(calculate, 10);
+    }
+
+    function processMath(input) {
+        if (input.value.includes('+')) {
+            try {
+                const formula = input.value.replace(/[^0-9+.-]/g, '');
+                input.value = Function('"use strict";return (' + formula + ')')();
+            } catch (e) {}
+        }
+    }
+
+    function calculate() {
+        document.querySelectorAll('.network-block').forEach(block => {
+            const type = block.dataset.type;
+            const a = parseFloat(block.querySelector('.input-a').value) || 0;
+            const c = parseFloat(block.querySelector('.input-c').value) || 0;
+            const d = parseFloat(block.querySelector('.input-d').value) || 0;
+            const hasData = block.querySelector('.input-a').value !== "" || block.querySelector('.input-d').value !== "";
+
+            let lVal = 0, totalVal = 0;
+
+            if (type === 'ais') {
+                const b = parseFloat(block.querySelector('.input-b').value) || 0;
+                lVal = (a + c - b) - d;
+                totalVal = lVal * 100 / 97;
+            } else if (type === 'dtac') {
+                lVal = (a + c) - d;
+                totalVal = lVal * 100 / 97;
+            } else {
+                totalVal = (a + c) - d;
+            }
+
+            if (block.querySelector('.res-l')) block.querySelector('.res-l').innerHTML = render(lVal, hasData);
+            block.querySelector('.res-total').innerHTML = render(totalVal, hasData);
+
+            const s1 = parseFloat(block.querySelector('.s-1').value) || 0;
+            const s2 = parseFloat(block.querySelector('.s-2').value) || 0;
+            const s3 = parseFloat(block.querySelector('.s-3').value) || 0;
+            const sumStaff = s1 + s2 + s3;
+            block.querySelector('.staff-sum').innerText = sumStaff.toLocaleString(undefined, {minimumFractionDigits: 2});
+        });
+    }
+
+    function render(val, hasData) {
+        if (!hasData) return '<span style="color:#cbd5e1">-</span>';
+        return val.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function clearAll() {
+        if(confirm('ล้างข้อมูลทั้งหมด?')) {
+            document.querySelectorAll('input').forEach(i => i.value = "");
+            calculate();
+            document.querySelectorAll('input')[0].focus();
+        }
+    }
+</script>
+</body>
+</html>
