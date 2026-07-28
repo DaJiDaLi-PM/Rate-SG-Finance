@@ -6,30 +6,30 @@
     <style>
         body { font-family: 'Sarabun', 'Tahoma', sans-serif; line-height: 1.6; padding: 30px; background-color: #f0f2f5; color: #333; }
         .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; }
-        /* แถบด้านบน: โลโก้ชิดซ้าย ปุ่มชิดขวา */
-    .top-bar { 
-    display: flex; 
-    justify-content: space-between; /* จัดให้อยู่คนละฝั่ง */
-    align-items: center; /* จัดให้อยู่ในแนวตรงกันกลางแนวตั้ง */
-    margin-bottom: 10px;
-    }
-    .shop-logo img {
-    height: 140px; /* ปรับความสูงของโลโก้ตามต้องการ */
-    width: auto;
-    display: block;
-    transition: transform 0.2s;
-    }
-    .btn-nav { 
-        background-color: #1a73e8; 
-        color: white; 
-        padding: 10px 18px; 
-        border-radius: 20px; 
-        text-decoration: none; 
-        font-weight: bold; 
-        font-size: 15px; 
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
-        transition: background 0.3s; 
-    }
+        
+        .top-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 10px;
+        }
+        .shop-logo img {
+            height: 140px; 
+            width: auto;
+            display: block;
+            transition: transform 0.2s;
+        }
+        .btn-nav { 
+            background-color: #1a73e8; 
+            color: white; 
+            padding: 10px 18px; 
+            border-radius: 20px; 
+            text-decoration: none; 
+            font-weight: bold; 
+            font-size: 15px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            transition: background 0.3s; 
+        }
         .btn-nav:hover { background-color: #0d47a1; }
 
         h1 { text-align: center; color: #1428a0; margin-bottom: 25px; }
@@ -60,12 +60,12 @@
     <!-- โลโก้ร้าน (ชิดซ้าย) -->
     <div class="top-bar">
         <a href="https://www.facebook.com/share/p/1EN4EtNZ1X/" target="_blank" class="shop-logo">
-        <img src="https://i.postimg.cc/BQtKX9mt/MEITU-20260318-140547295.png" alt="โลโก้ร้าน">
+            <img src="https://i.postimg.cc/BQtKX9mt/MEITU-20260318-140547295.png" alt="โลโก้ร้าน">
         </a>
         <!-- ปุ่มไป หน้าอื่น -->
-        <div class=".btn-nav">
+        <div>
             <a href="index.html" class="btn-nav">⬅ เช็คราคาผ่อน SG </a>
-            <a href="Ais" class="btn-nav">⬅ คำนวน นอกระบบ </a>
+            <a href="Ais.html" class="btn-nav">⬅ คำนวน นอกระบบ </a>
         </div>
     </div>
     <h1> เช็คราคา-ผ่อน-Samsung </h1> 
@@ -78,7 +78,7 @@
                 <input type="number" id="priceInput" placeholder="ระบุราคา เช่น 13999" oninput="runCalculator()">
             </div>
             <div class="input-item">
-                <label for="discountInput">ส่วนลด (บาท)</label>
+                <label for="discountInput">ส่วนลดดาวน์ (บาท)</label>
                 <input type="number" id="discountInput" placeholder="ระบุส่วนลด (ถ้ามี)" oninput="runCalculator()">
             </div>
         </div>
@@ -107,14 +107,16 @@
         <div class="tutorial-box">
             <p><span class="step-title">สูตรหลัก:</span> ยอดผ่อน = [(ยอดจัด + ดอกเบี้ยรวม) ÷ จำนวนเดือน]</p>
             
-            <p><strong>ขั้นตอนการกดเครื่องคิดเลข (ตัวอย่าง: ราคา 13,999.- ดาวน์ 5% ผ่อน 24 เดือน)</strong></p>
+            <p><strong>ขั้นตอนการกดเครื่องคิดเลข (ตัวอย่าง: ราคา 13,999.- ดาวน์ 5% ส่วนลด 200.- ผ่อน 24 เดือน)</strong></p>
             <ol>
-                <li><strong>หาเงินดาวน์ปกติ (5%):</strong> <code>13,999 x 5%</code> = 699.95 (ปัดขึ้นเป็น 700.-)</li>
-                <li><strong>หายอดจัด (เงินกู้):</strong> <code>13,999 - 700</code> = <b>13,299.-</b></li>
+                <li><strong>หาเงินดาวน์ปกติ (ปัดขึ้นหลักร้อย):</strong> <code>13,999 x 5%</code> = 699.95 -> <b>700.-</b></li>
+                <li><strong>หาเงินดาวน์สุทธิ (หลังหักส่วนลด):</strong> <code>700 - 200</code> = <b>500.-</b></li>
+                <li><strong>หายอดจัด (คิดจากเงินดาวน์ปกติก่อนหักส่วนลด):</strong> <code>13,999 - 700</code> = <b>13,299.-</b></li>
                 <li><strong>หาดอกเบี้ยรวม (0.87% / 24 เดือน):</strong> <code>13,299 x 0.87% x 24 เดือน</code> = <b>2,776.82.-</b></li>
                 <li><strong>หายอดผ่อนต่อเดือน:</strong> <code>(13,299 + 2,776.82) ÷ 24</code> = 669.82<br>
-                <span class="highlight">** ผลลัพธ์ในตารางจะปัดเศษลงเสมอ (Math.floor) เหลือ 669.- **</span></li>
+                <span class="highlight">** ผลลัพธ์ในตารางจะปัดเศษทิ้งเสมอ (Math.floor) เหลือ 669.- **</span></li>
             </ol>
+            <p><i>*หมายเหตุ: ส่วนลดจะช่วยลดเฉพาะเงินดาวน์ที่ต้องจ่ายหน้าร้าน ไม่มีผลต่อยอดผ่อนต่อเดือน</i></p>
         </div>
     </div>
 </div>
@@ -134,18 +136,21 @@ function runCalculator() {
     const downRates = [0, 0.05, 0.10, 0.20, 0.30];
 
     downRates.forEach(rate => {
+        // 1. คำนวณเงินดาวน์ปกติตามอัตรา % (ปัดขึ้นหลักร้อย)
         let initialDown = Math.ceil((price * rate) / 100) * 100;
         if (rate === 0) initialDown = 0;
 
+        // 2. คำนวณยอดจัดไฟแนนซ์คงที่ (ใช้ดาวน์ปกติ ไม่นำส่วนลดมาคิด เพื่อให้ยอดผ่อนคงที่)
+        const loanForInstallment = price - initialDown;
+
+        // 3. คำนวณเงินดาวน์สุทธิที่ลูกค้าต้องจ่ายจริง (นำส่วนลดมาหักที่นี่เท่านั้น)
         let finalDown = initialDown - discount;
         if (finalDown < 0) finalDown = 0;
 
-        const loan = price - finalDown;
-
-        // อัตราดอกเบี้ย 0.87% (0.0087)
-        const m12 = calculateMonthly(loan, 12, 0.0087);
-        const m18 = calculateMonthly(loan, 18, 0.0087);
-        const m24 = calculateMonthly(loan, 24, 0.0087);
+        // 4. คำนวณยอดผ่อนต่อเดือนจากยอดจัดไฟแนนซ์คงที่ (ดอกเบี้ย 0.87%)
+        const m12 = calculateMonthly(loanForInstallment, 12, 0.0087);
+        const m18 = calculateMonthly(loanForInstallment, 18, 0.0087);
+        const m24 = calculateMonthly(loanForInstallment, 24, 0.0087);
 
         const row = `<tr>
             <td class="down-row">${rate * 100}%</td>
@@ -159,11 +164,12 @@ function runCalculator() {
 }
 
 function calculateMonthly(loan, months, rate) {
+    if (loan <= 0) return "0";
     const interestTotal = loan * rate * months;
     const totalPayable = loan + interestTotal;
     const monthlyPay = totalPayable / months;
     
-    // ปัดเศษทิ้ง (Math.floor) เพื่อให้ได้ค่างวดตรงตามมาตรฐาน 669.-
+    // ปัดเศษทิ้ง (Math.floor) เพื่อให้ได้ค่างวดตรงตามมาตรฐานของ Samsung
     return Math.floor(monthlyPay).toLocaleString();
 }
 </script>
