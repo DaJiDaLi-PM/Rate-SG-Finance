@@ -100,8 +100,9 @@
         <tbody id="tableBody">
             <!-- ข้อมูลจะแสดงที่นี่ -->
         </tbody>
+        
     </table>
-
+     <h3>**ดาวน์ รวมค่าธรรมเนียมแล้ว ยอดไม่รวม ให้หัก 250 บาท</h3>
     <div class="tutorial-section">
         <h3>คู่มือการคำนวณ Samsung (สำหรับสอนงาน)</h3>
         <div class="tutorial-box">
@@ -110,7 +111,6 @@
             <p><strong>ขั้นตอนการกดเครื่องคิดเลข (ตัวอย่าง: ราคา 13,999.- ดาวน์ 5% ส่วนลด 200.- ผ่อน 24 เดือน)</strong></p>
             <ol>
                 <li><strong>หาเงินดาวน์ปกติ (ปัดขึ้นหลักร้อย):</strong> <code>13,999 x 5%</code> = 699.95 -> <b>700.-</b></li>
-                <li><strong>หาเงินดาวน์สุทธิ (หลังหักส่วนลด):</strong> <code>700 - 200</code> = <b>500.-</b></li>
                 <li><strong>หายอดจัด (คิดจากเงินดาวน์ปกติก่อนหักส่วนลด):</strong> <code>13,999 - 700</code> = <b>13,299.-</b></li>
                 <li><strong>หาดอกเบี้ยรวม (0.87% / 24 เดือน):</strong> <code>13,299 x 0.87% x 24 เดือน</code> = <b>2,776.82.-</b></li>
                 <li><strong>หายอดผ่อนต่อเดือน:</strong> <code>(13,299 + 2,776.82) ÷ 24</code> = 669.82<br>
@@ -172,6 +172,10 @@ function calculateMonthly(loan, months, rate) {
     // ปัดเศษทิ้ง (Math.floor) เพื่อให้ได้ค่างวดตรงตามมาตรฐานของ Samsung
     return Math.floor(monthlyPay).toLocaleString();
 }
+</script>
+
+</body>
+</html>
 </script>
 
 </body>
